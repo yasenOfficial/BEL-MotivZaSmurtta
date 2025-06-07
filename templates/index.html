@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мотивът за смъртта</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div id="questionnaire-modal" class="modal">
+        <div class="modal-content">
+            <h2>Как бихте искали да разгледате информацията?</h2>
+            <form id="preferences-form">
+                <div class="question">
+                    <h3>Изберете основен начин на подредба:</h3>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="arrangement" value="chronological" checked>
+                            <span>Хронологично (по години)</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="arrangement" value="thematic">
+                            <span>По теми</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="arrangement" value="author">
+                            <span>По автори</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>Кой аспект Ви интересува най-много?</h3>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="focus" value="historical" checked>
+                            <span>Историческият контекст</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="focus" value="literary">
+                            <span>Литературните връзки</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="focus" value="thematic">
+                            <span>Тематичното развитие</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>Предпочитан стил на визуализация:</h3>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="style" value="minimal" checked>
+                            <span>Минималистичен</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="style" value="detailed">
+                            <span>Детайлен</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="style" value="animated">
+                            <span>Анимиран</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="start-button">Започнете</button>
+            </form>
+        </div>
+    </div>
+
+    <header>
+        <h1>Развитие на мотива за смъртта</h1>
+    </header>
+    <main>
+        <div id="graph-container"></div>
+        <div id="info-panel">
+            <h2>Информация</h2>
+            <div id="node-info">
+                <p>Изберете възел от графа за повече информация.</p>
+            </div>
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html> 

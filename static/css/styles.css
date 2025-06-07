@@ -1,0 +1,468 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #ffffff;
+    background-color: #000000;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #ffffff;
+    padding: 0.8rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+    pointer-events: none;
+}
+
+header h1 {
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#graph-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#info-panel {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%) translateY(100%);
+    width: min(600px, 95%);
+    max-height: 80vh;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px 20px 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2.5rem 2rem 2rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    z-index: 1500;
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
+}
+
+#info-panel.expanded {
+    transform: translateX(-50%) translateY(0);
+}
+
+.node {
+    cursor: pointer;
+}
+
+.node circle {
+    transition: filter 0.3s ease;
+}
+
+.node:hover circle {
+    filter: url(#glow-intense) !important;
+}
+
+.node.selected circle {
+    filter: url(#glow-intense) !important;
+}
+
+.node text {
+    font-size: clamp(12px, 2vw, 14px);
+    fill: #ffffff;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+    pointer-events: none;
+}
+
+.link {
+    stroke: rgba(255, 255, 255, 0.5);
+    transition: stroke-opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+#node-info {
+    color: #fff;
+}
+
+#node-info h3 {
+    margin: 0 0 1.5rem;
+    font-size: 1.5rem;
+    color: #4dabf7;
+    padding-right: 2rem;
+}
+
+#node-info p {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#node-info strong {
+    color: #fff;
+    font-weight: 500;
+}
+
+#node-info ul {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+    list-style-type: none;
+}
+
+#node-info li {
+    position: relative;
+    margin: 0.5rem 0;
+    padding-left: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#node-info li::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 0.6rem;
+    width: 5px;
+    height: 5px;
+    background: #4dabf7;
+    border-radius: 50%;
+}
+
+.resources-list {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+    list-style-type: none;
+}
+
+.resources-list li {
+    position: relative;
+    margin: 0.5rem 0;
+    padding-left: 1rem;
+}
+
+.resources-list li a {
+    color: #4dabf7;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.resources-list li a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.resources-list li::before {
+    content: '→';
+    position: absolute;
+    left: -1rem;
+    color: #4dabf7;
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.close-button:hover {
+    opacity: 1;
+}
+
+.close-button::before,
+.close-button::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background-color: #fff;
+    transition: background-color 0.2s ease;
+}
+
+.close-button::before {
+    transform: rotate(45deg);
+}
+
+.close-button::after {
+    transform: rotate(-45deg);
+}
+
+.close-button:hover::before,
+.close-button:hover::after {
+    background-color: #4dabf7;
+}
+
+/* Zoom controls */
+.zoom-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.legend {
+    pointer-events: none;
+}
+
+.legend text {
+    fill: #fff;
+    font-size: 14px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.question {
+    margin-bottom: 2rem;
+}
+
+.question h3 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.radio-group label:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.radio-group input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    margin-right: 12px;
+    position: relative;
+    transition: border-color 0.2s ease;
+}
+
+.radio-group input[type="radio"]:checked {
+    border-color: #4dabf7;
+}
+
+.radio-group input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #4dabf7;
+    border-radius: 50%;
+}
+
+.radio-group span {
+    color: #fff;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.start-button {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    background: #4dabf7;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.start-button:hover {
+    background: #3793dd;
+    transform: translateY(-1px);
+}
+
+.start-button:active {
+    transform: translateY(1px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #info-panel {
+        width: 100%;
+        border-radius: 15px 15px 0 0;
+        padding: 2rem 1.5rem 1.5rem;
+    }
+
+    #node-info h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    #node-info p {
+        font-size: 0.9rem;
+    }
+
+    .zoom-controls {
+        bottom: 70px;
+    }
+
+    .legend {
+        display: none;
+    }
+
+    .node text {
+        font-size: 10px;
+    }
+}
+
+/* Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+} 
